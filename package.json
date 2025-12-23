@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"package": "npm run build && mkdir -p dist && cp main.js manifest.json styles.css dist/ && cd dist && tar -czf ../better-file-color-plugin.tar.gz * && cd .. && rm -rf dist"
 	},
 	"keywords": [],
 	"author": "ecustic",

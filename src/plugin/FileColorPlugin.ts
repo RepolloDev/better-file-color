@@ -1,4 +1,4 @@
-import { debounce, MenuItem, Plugin } from 'obsidian'
+import { debounce, MenuItem, Plugin, TFile } from 'obsidian'
 import { SetColorModal } from 'plugin/SetColorModal'
 import { FileColorSettingTab } from 'plugin/FileColorSettingTab'
 
@@ -111,12 +111,12 @@ export class FileColorPlugin extends Plugin {
       }
     } else if (condition.type === 'property') {
       const file = this.app.vault.getAbstractFileByPath(path)
-      if (!file || !('extension' in file) || file.extension !== 'md') {
+      if (!file || !('extension' in file) || (file as TFile).extension !== 'md') {
         return false
       }
 
       try {
-        const cache = this.app.metadataCache.getFileCache(file)
+        const cache = this.app.metadataCache.getFileCache(file as TFile)
         const frontmatter = cache?.frontmatter
         
         if (!frontmatter) return false
@@ -193,8 +193,8 @@ export class FileColorPlugin extends Plugin {
                   if (group.usePropertyAsColor) {
                     // Obtener color desde propiedad
                     const file = this.app.vault.getAbstractFileByPath(path)
-                    if (file && 'extension' in file && file.extension === 'md') {
-                      const cache = this.app.metadataCache.getFileCache(file)
+                    if (file && 'extension' in file && (file as TFile).extension === 'md') {
+                      const cache = this.app.metadataCache.getFileCache(file as TFile)
                       const frontmatter = cache?.frontmatter
                       if (frontmatter && frontmatter[group.propertyNameForColor]) {
                         const hexPattern = /^#?[0-9A-Fa-f]{6}$/
