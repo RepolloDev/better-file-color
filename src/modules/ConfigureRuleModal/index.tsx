@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Modal } from 'obsidian'
 import { createRoot, Root } from 'react-dom/client'
 import type { FileColorPluginSettings } from 'settings'
@@ -72,6 +72,7 @@ const ConfigureRuleContent: React.FC<{
   const [expandedConditions, setExpandedConditions] = useState<Set<string>>(new Set())
   const [error, setError] = useState('')
   const [nameError, setNameError] = useState('')
+  const isSavingRef = useRef(false)
 
   // Aplicar preview automáticamente cuando cambien las condiciones
   useEffect(() => {
@@ -91,10 +92,12 @@ const ConfigureRuleContent: React.FC<{
     plugin.settings.groups = [previewGroup, ...originalGroups.filter((g: any) => g.id !== group.id)]
     plugin.applyColorStyles()
     
-    // Cleanup: restaurar al desmontar o cambiar
+    // Cleanup: restaurar al desmontar o cambiar (pero no si estamos guardando)
     return () => {
-      plugin.settings.groups = originalGroups
-      plugin.applyColorStyles()
+      if (!isSavingRef.current) {
+        plugin.settings.groups = originalGroups
+        plugin.applyColorStyles()
+      }
     }
   }, [conditions, colorId, usePropertyAsColor, propertyNameForColor, name])
 
@@ -234,6 +237,7 @@ const ConfigureRuleContent: React.FC<{
     }
     
     console.log('Saving group:', savedGroup)
+    isSavingRef.current = true
     onSave(savedGroup)
   }
 
