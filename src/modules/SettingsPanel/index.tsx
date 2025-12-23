@@ -57,6 +57,23 @@ export const SettingsPanel = () => {
     setPalette(palette.filter((paletteColor) => paletteColor.id !== color.id))
   }
 
+  const validateAndNormalizeHex = (hex: string): string | null => {
+    hex = hex.trim()
+    // Remove # if present
+    if (hex.startsWith('#')) {
+      hex = hex.substring(1)
+    }
+    // Validate hex format (3 or 6 characters)
+    if (/^[0-9A-Fa-f]{6}$/.test(hex)) {
+      return '#' + hex.toUpperCase()
+    }
+    if (/^[0-9A-Fa-f]{3}$/.test(hex)) {
+      // Expand 3-digit hex to 6-digit
+      return '#' + hex.split('').map(c => c + c).join('').toUpperCase()
+    }
+    return null
+  }
+
   const onColorValueChange = (color: Color, value: string) => {
     setPalette(
       palette.map((paletteColor) => {
@@ -66,6 +83,13 @@ export const SettingsPanel = () => {
         return paletteColor
       })
     )
+  }
+
+  const onColorHexInputChange = (color: Color, hexValue: string) => {
+    const normalized = validateAndNormalizeHex(hexValue)
+    if (normalized) {
+      onColorValueChange(color, normalized)
+    }
   }
 
   const onColorNameChange = (color: Color, name: string) => {
@@ -131,6 +155,17 @@ export const SettingsPanel = () => {
               type="color"
               value={color.value}
               onChange={(e) => onColorValueChange(color, e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="#RRGGBB"
+              value={color.value}
+              onChange={(e) => onColorHexInputChange(color, e.target.value)}
+              style={{
+                fontFamily: 'var(--font-monospace)',
+                width: '90px',
+                textAlign: 'center'
+              }}
             />
             <WideTextInput
               type="text"
